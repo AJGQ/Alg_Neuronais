@@ -46,9 +46,12 @@ fig, _ = plt.subplots()
 plt.subplots_adjust(left=0.25, bottom=0.25)
 plt.axis((-lim/2,lim/2,-15,20))
 
-l, = plt.plot(X,fun_u[0])
-
+plt.plot(X,fun_u[0])
+plt.plot(X,fun_u[-1] - h )
+plt.plot(X,np.zeros(numNeu) - h)
+'''
 #Sliders
+l, = plt.plot(X,fun_u[0])
 axtemp = plt.axes([0.25, 0.1, 0.65, 0.03])
 
 stemp = Slider(axtemp, 'Time', 0, T-dt, valinit=0)
@@ -60,7 +63,7 @@ def update(val):
 
 stemp.on_changed(update)
 #
-
+'''
 
 plt.show()
 #
