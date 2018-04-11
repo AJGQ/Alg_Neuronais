@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import random as r
+from random import random
 from matplotlib.widgets import Slider, Button, RadioButtons
 
 
@@ -42,7 +42,7 @@ fun_u[0] = -0.5 + 8 * np.exp(-(X**2)/18)
 for i in range(1,numSteps):
     fun_u[i] = (1-dt)*fun_u[i-1] + dt*(Integral(X,i-1))#+ eps*r.random()# + fun_u[0])
     for j in range(int((1/dx)*lim)):
-        fun_u[i,j] += eps*r.random()
+        fun_u[i,j] += eps*random()
 
 
 
