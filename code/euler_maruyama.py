@@ -80,20 +80,36 @@ M_M = [ 0 for i in range(numSteps)]
 m_M = [ 0 for i in range(numSteps)]
 M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
+m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
+med_m = [ 0 for i in range(numSteps)]
+M_m = [ 0 for i in range(numSteps)]
+m_m = [ 0 for i in range(numSteps)]
+
 for i in range(numTest):
     fun_u = calculate_U()
     for j in range(numSteps):
         M[i][j] = max(fun_u[j])
+        m[i][j] = min(fun_u[j])
 
 for i in range(numSteps):
     med_M[i] = sum([ M[j][i] for j in range(numTest)])/numTest
     M_M[i] = max([ M[j][i] for j in range(numTest)])
     m_M[i] = min([ M[j][i] for j in range(numTest)])
 
+    med_M[i] = sum([ m[j][i] for j in range(numTest)])/numTest
+    M_m[i] = max([ m[j][i] for j in range(numTest)])
+    m_m[i] = min([ m[j][i] for j in range(numTest)])
 
-print("media dos maximos:\n",med_M)
-print("maximo dos maximos:\n",M_M)
-print("minimo dos maximos:\n",m_M)
+print("\n\n ------ Máximos-------\n\n")
+print ("Máximos:\n", M)
+print("\n\nMedia dos máximos:\n",med_M)
+print("\n\nMáximo dos máximos:\n",M_M)
+print("\n\nMínimo dos máximos:\n",m_M)
+print("\n\n ------ Mínimos-------\n\n")
+print ("Mínimos:\n", m)
+print("\n\nMedia dos mínimos:\n",med_m)
+print("\n\nMáximo dos mínimos:\n",M_m)
+print("\n\nMínimo dos mínimos:\n",m_m)
 
 
 #plot(fun_u, True)
