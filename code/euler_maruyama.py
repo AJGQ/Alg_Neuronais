@@ -16,14 +16,6 @@ T = 4
 numSteps = 100
 dt = T/numSteps
 
-#variáveis
-h = 2.8997
-A = 2
-b = 0.08
-alfa = np.pi/10
-
-fun_u = np.zeros((numSteps,numNeu))
-
 def fun_f(x):
     if(x < 0):
         return 0
@@ -33,20 +25,24 @@ def fun_f(x):
 def fun_w(x):
     return A*np.exp(-b*np.abs(x))*(b*np.sin(np.abs(alfa*x)) + np.cos(alfa*x))
 
-def Integral(x,t):
-    return sum([dx*(fun_w(x-X[y])*fun_f(fun_u[t,y]-h)) for y in range(numNeu)])
+def calculate_U():
 
-#fun_u[0]=fun_S
-fun_u[0] = -0.5 + 8 * np.exp(-(X**2)/18)
+    #inicializar fun_u
+    fun_u = np.zeros((numSteps,numNeu))
 
-for i in range(1,numSteps):
-    fun_u[i] = (1-dt)*fun_u[i-1] + dt*(Integral(X,i-1))#+ eps*r.random()# + fun_u[0])
-    for j in range(int((1/dx)*lim)):
-        fun_u[i,j] += eps*r.random()
+    fun_S = -0.5 + 20 * np.exp(-(X**2)/18)
+    fun_u[0] = fun_S
 
+    def Integral(x,t):
+        return sum([dx*(fun_w(x-X[y])*fun_f(fun_u[t,y]-h)) for y in range(numNeu)])
 
+    for i in range(1,numSteps):
+        du = dt*(-fun_u[i-1] + Integral(X,i-1))
+        fun_u[i] = du + fun_u[i-1]
 
+    return fun_u
 
+fun_u = calculate_U()
 #Plot
 fig, _ = plt.subplots()
 plt.subplots_adjust(left=0.25, bottom=0.25)
