@@ -4,7 +4,15 @@ import random as r
 from matplotlib.widgets import Slider, Button, RadioButtons
 
 
-#discretizar espaço e tempo
+
+#variaveis
+h = 2.8997
+A = 2
+b = 0.08
+alfa = np.pi/10
+
+#discretizar espaco e tempo
+
 dx = 0.5
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
