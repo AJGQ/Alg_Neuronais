@@ -49,7 +49,7 @@ def calculate_U():
 
     return fun_u
 
-def plot(fun_u, sliders = False):
+def plot_U(fun_u, sliders = False):
     #Plot
     fig, _ = plt.subplots()
     plt.subplots_adjust(left=0.25, bottom=0.25)
@@ -74,11 +74,11 @@ def plot(fun_u, sliders = False):
 
     plt.show()
 
-numTest = 5
+numTest = 10
+M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 med_M = [ 0 for i in range(numSteps)]
 M_M = [ 0 for i in range(numSteps)]
 m_M = [ 0 for i in range(numSteps)]
-M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
 m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 med_m = [ 0 for i in range(numSteps)]
@@ -101,15 +101,15 @@ for i in range(numSteps):
     m_m[i] = min([ m[j][i] for j in range(numTest)])
 
 print("\n\n ------ Máximos-------\n\n")
-print ("Máximos:\n", M)
+#print("Máximos:\n", M)
 print("\n\nMedia dos máximos:\n",med_M)
 print("\n\nMáximo dos máximos:\n",M_M)
 print("\n\nMínimo dos máximos:\n",m_M)
 print("\n\n ------ Mínimos-------\n\n")
-print ("Mínimos:\n", m)
+#print("Mínimos:\n", m)
 print("\n\nMedia dos mínimos:\n",med_m)
 print("\n\nMáximo dos mínimos:\n",M_m)
 print("\n\nMínimo dos mínimos:\n",m_m)
 
 
-#plot(fun_u, True)
+#plot_U(fun_u, True)
