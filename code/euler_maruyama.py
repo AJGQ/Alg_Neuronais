@@ -96,7 +96,7 @@ for i in range(numSteps):
     M_M[i] = max([ M[j][i] for j in range(numTest)])
     m_M[i] = min([ M[j][i] for j in range(numTest)])
 
-    med_M[i] = sum([ m[j][i] for j in range(numTest)])/numTest
+    med_m[i] = sum([ m[j][i] for j in range(numTest)])/numTest
     M_m[i] = max([ m[j][i] for j in range(numTest)])
     m_m[i] = min([ m[j][i] for j in range(numTest)])
 
