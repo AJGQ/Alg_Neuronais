@@ -15,7 +15,7 @@ dx = 0.5
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
-eps = 0.03
+eps = 0.08
 
 T = 4
 numSteps = 100
@@ -74,16 +74,16 @@ def plot_U(fun_u, sliders = False):
 
     plt.show()
 
-numTest = 10
+numTest = 5
 M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 med_M = [ 0 for i in range(numSteps)]
-M_M = [ 0 for i in range(numSteps)]
-m_M = [ 0 for i in range(numSteps)]
+max_M = [ 0 for i in range(numSteps)]
+min_M = [ 0 for i in range(numSteps)]
 
 m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 med_m = [ 0 for i in range(numSteps)]
-M_m = [ 0 for i in range(numSteps)]
-m_m = [ 0 for i in range(numSteps)]
+max_m = [ 0 for i in range(numSteps)]
+min_m = [ 0 for i in range(numSteps)]
 
 for i in range(numTest):
     fun_u = calculate_U()
@@ -93,23 +93,45 @@ for i in range(numTest):
 
 for i in range(numSteps):
     med_M[i] = sum([ M[j][i] for j in range(numTest)])/numTest
-    M_M[i] = max([ M[j][i] for j in range(numTest)])
-    m_M[i] = min([ M[j][i] for j in range(numTest)])
+    max_M[i] = max([ M[j][i] for j in range(numTest)])
+    min_M[i] = min([ M[j][i] for j in range(numTest)])
 
     med_m[i] = sum([ m[j][i] for j in range(numTest)])/numTest
-    M_m[i] = max([ m[j][i] for j in range(numTest)])
-    m_m[i] = min([ m[j][i] for j in range(numTest)])
+    max_m[i] = max([ m[j][i] for j in range(numTest)])
+    min_m[i] = min([ m[j][i] for j in range(numTest)])
 
+#Plot - Maximos
+plt.subplots()
+plt.subplots_adjust(left=0.25, bottom=0.25)
+plt.axis((0,numSteps,0,30))
+
+plt.plot( np.arange(0,numSteps,1), max_M )
+plt.plot( np.arange(0,numSteps,1), med_M )
+plt.plot( np.arange(0,numSteps,1), min_M )
+
+plt.show()
+
+#Plot - Minimos
+plt.subplots()
+plt.subplots_adjust(left=0.25, bottom=0.25)
+plt.axis((0,numSteps,-20,10))
+
+plt.plot( np.arange(0,numSteps,1), max_m )
+plt.plot( np.arange(0,numSteps,1), med_m )
+plt.plot( np.arange(0,numSteps,1), min_m )
+
+plt.show()
+'''
 print("\n\n ------ Máximos-------\n\n")
 #print("Máximos:\n", M)
 print("\n\nMedia dos máximos:\n",med_M)
-print("\n\nMáximo dos máximos:\n",M_M)
-print("\n\nMínimo dos máximos:\n",m_M)
+print("\n\nMáximo dos máximos:\n",max_M)
+print("\n\nMínimo dos máximos:\n",min_M)
 print("\n\n ------ Mínimos-------\n\n")
 #print("Mínimos:\n", m)
 print("\n\nMedia dos mínimos:\n",med_m)
-print("\n\nMáximo dos mínimos:\n",M_m)
-print("\n\nMínimo dos mínimos:\n",m_m)
-
+print("\n\nMáximo dos mínimos:\n",max_m)
+print("\n\nMínimo dos mínimos:\n",min_m)
+'''
 
 #plot_U(fun_u, True)
