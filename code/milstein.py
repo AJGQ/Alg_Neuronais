@@ -9,7 +9,7 @@ dx = 0.5
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
-eps = 0.03
+eps = 0.08
 
 
 T = 4
