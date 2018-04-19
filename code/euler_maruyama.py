@@ -11,7 +11,7 @@ b = 0.08
 alfa = np.pi/10
 
 #discretizar espaco e tempo
-dx = 0.1
+dx = 0.5
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
@@ -23,10 +23,13 @@ dt = T/numSteps
 
 #definicao de funcoes
 def fun_f(x):
-    if(x < 0):
-        return 0
-    else:
-        return 1
+    try:
+        if(x < 0):
+            return 0
+        else:
+            return 1
+    except:
+        return np.array([ fun_f(i) for i in x])
 
 def fun_w(x):
     return A*np.exp(-b*np.abs(x))*(b*np.sin(np.abs(alfa*x)) + np.cos(alfa*x))
@@ -37,6 +40,9 @@ def calculate_U(met = "E_M"):
         noise = eps*np.random.random((numSteps,numNeu))
     elif met == "M":
         noise = (eps/2)*(np.random.random((numSteps,numNeu))**2 - dt )
+    elif met == "DET":
+        noise = np.zeros((numSteps,numNeu))
+
     #inicializar fun_u
     fun_u = np.zeros((numSteps,numNeu))
 
@@ -47,7 +53,13 @@ def calculate_U(met = "E_M"):
         return sum([(dx/2)*(fun_w(x-X[y])*fun_f(fun_u[t,y]-h)+ fun_w(x-X[y+1])*fun_f(fun_u[t,y+1]-h)) for y in range(numNeu-1)])
 
     for i in range(1,numSteps):
-        du = dt*(-fun_u[i-1] + Integral(X,i-1))
+        #du = dt*(-fun_u[i-1] + Integral(X,i-1))
+
+
+        du = dt*(-fun_u[i-1] + dx*np.real(np.fft.ifft(np.fft.fft(fun_w(X))*
+                                                      np.fft.fft(fun_f(fun_u[i-1] - h))
+                                                      )))
+
         fun_u[i] = du + fun_u[i-1] + noise[i]
 
     return fun_u
@@ -77,6 +89,9 @@ def plot_U(fun_u, sliders = False):
 
     plt.show()
 
+fun_u = calculate_U("DET")
+
+'''
 numTest = 5
 M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 med_M = [ 0 for i in range(numSteps)]
@@ -127,6 +142,7 @@ plt.plot( np.arange(0,numSteps,1), min_m )
 
 plt.show()
 '''
+'''
 print("\n\n ------ Máximos-------\n\n")
 #print("Máximos:\n", M)
 print("\n\nMedia dos máximos:\n",med_M)
@@ -139,4 +155,4 @@ print("\n\nMáximo dos mínimos:\n",max_m)
 print("\n\nMínimo dos mínimos:\n",min_m)
 '''
 
-#plot_U(fun_u, True)
+plot_U(fun_u, True)
