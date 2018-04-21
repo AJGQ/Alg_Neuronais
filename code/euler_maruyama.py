@@ -56,9 +56,11 @@ def calculate_U(met = "E_M"):
         #du = dt*(-fun_u[i-1] + Integral(X,i-1))
 
 
-        du = dt*(-fun_u[i-1] + dx*np.real(np.fft.ifft(np.fft.fft(fun_w(X))*
-                                                      np.fft.fft(fun_f(fun_u[i-1] - h))
-                                                      )))
+        du = dt*(-fun_u[i-1] + dx*np.real(np.fft.ifft(np.fft.fft(fun_w(X), norm = "ortho")*
+                                                      np.fft.fft(fun_f(fun_u[i-1] - h), norm = "ortho")
+                                                      , norm = "ortho")))
+
+        #du = dt*(-fun_u[i-1] + dx*np.convolve(fun_w(X), fun_f(fun_u[i-1] - h), 'valid')[0])
 
         fun_u[i] = du + fun_u[i-1] + noise[i]
 
@@ -89,7 +91,7 @@ def plot_U(fun_u, sliders = False):
 
     plt.show()
 
-fun_u = calculate_U("DET")
+fun_u = calculate_U("M")
 
 '''
 numTest = 5
