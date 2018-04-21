@@ -15,7 +15,7 @@ dx = 0.5
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
-eps = 0.1
+eps = 0.03
 
 T = 4
 numSteps = 100
@@ -29,6 +29,7 @@ def fun_f(x):
         else:
             return 1
     except:
+        #print(np.array([ fun_f(i) for i in x]))
         return np.array([ fun_f(i) for i in x])
 
 def fun_w(x):
@@ -53,8 +54,15 @@ def calculate_U(met = "E_M"):
         return sum([(dx/2)*(fun_w(x-X[y])*fun_f(fun_u[t,y]-h)+ fun_w(x-X[y+1])*fun_f(fun_u[t,y+1]-h)) for y in range(numNeu-1)])
 
     for i in range(1,numSteps):
-        #du = dt*(-fun_u[i-1] + Integral(X,i-1))
+        du = dt*(-fun_u[i-1] + Integral(X,i-1))
 
+        #conv = dx*np.real(np.fft.ifft(np.fft.fft(fun_w(X), norm = "ortho")*
+        #                                              np.fft.fft(fun_f(fun_u[i-1] - h), norm = "ortho")
+        #                                              , norm = "ortho"))
+        #print(conv)
+        #du = dt*(-fun_u[i-1] + conv)
+
+        #du = dt*(-fun_u[i-1] + dx*np.convolve(fun_w(X), fun_f(fun_u[i-1] - h), "valid"))
 
         du = dt*(-fun_u[i-1] + dx*np.real(np.fft.ifft(np.fft.fft(fun_w(X), norm = "ortho")*
                                                       np.fft.fft(fun_f(fun_u[i-1] - h), norm = "ortho")
@@ -93,24 +101,30 @@ def plot_U(fun_u, sliders = False):
 
 fun_u = calculate_U("M")
 
-'''
 numTest = 5
 M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 med_M = [ 0 for i in range(numSteps)]
 max_M = [ 0 for i in range(numSteps)]
 min_M = [ 0 for i in range(numSteps)]
 
+
 m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 med_m = [ 0 for i in range(numSteps)]
 max_m = [ 0 for i in range(numSteps)]
 min_m = [ 0 for i in range(numSteps)]
 
+X_M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
+med_X_M = [ 0 for i in range(numSteps)]
+max_X_M = [ 0 for i in range(numSteps)]
+min_X_M = [ 0 for i in range(numSteps)]
+
 for i in range(numTest):
     fun_u = calculate_U()
-    if i == 0:
-        plot_U(fun_u,True)
+    #if i == 0:
+    #    plot_U(fun_u,True)
     for j in range(numSteps):
         M[i][j] = max(fun_u[j])
+        X_M[i][j] = X[np.argmax(fun_u[j])]
         m[i][j] = min(fun_u[j])
 
 for i in range(numSteps):
@@ -121,6 +135,10 @@ for i in range(numSteps):
     med_m[i] = sum([ m[j][i] for j in range(numTest)])/numTest
     max_m[i] = max([ m[j][i] for j in range(numTest)])
     min_m[i] = min([ m[j][i] for j in range(numTest)])
+
+    med_X_M[i] = sum([ X_M[j][i] for j in range(numTest)])/numTest
+    max_X_M[i] = max([ X_M[j][i] for j in range(numTest)])
+    min_X_M[i] = min([ X_M[j][i] for j in range(numTest)])
 
 #Plot - Maximos
 plt.subplots()
@@ -143,7 +161,18 @@ plt.plot( np.arange(0,numSteps,1), med_m )
 plt.plot( np.arange(0,numSteps,1), min_m )
 
 plt.show()
-'''
+
+#Plot - abcissa dos Maximos
+plt.subplots()
+plt.subplots_adjust(left=0.25, bottom=0.25)
+plt.axis((0,numSteps,-20,20))
+
+plt.plot( np.arange(0,numSteps,1), max_X_M )
+plt.plot( np.arange(0,numSteps,1), med_X_M )
+plt.plot( np.arange(0,numSteps,1), min_X_M )
+
+plt.show()
+
 '''
 print("\n\n ------ Máximos-------\n\n")
 #print("Máximos:\n", M)
@@ -157,4 +186,4 @@ print("\n\nMáximo dos mínimos:\n",max_m)
 print("\n\nMínimo dos mínimos:\n",min_m)
 '''
 
-plot_U(fun_u, True)
+#plot_U(fun_u, True)

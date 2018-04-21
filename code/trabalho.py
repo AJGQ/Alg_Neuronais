@@ -31,7 +31,7 @@ def fun_f(x):
 def fun_w(x):
     return A*np.exp(-b*np.abs(x))*(b*np.sin(np.abs(alfa*x)) + np.cos(alfa*x))
 
-def calculate_U(met = "E_M"):
+def calculate_U(met = "E_M", intgr = "Trap"):
     #random
     if met == "E_M":
         noise = eps*np.random.random((numSteps,numNeu))
@@ -44,7 +44,10 @@ def calculate_U(met = "E_M"):
     fun_u[0] = fun_S
 
     def Integral(x,t):
-        return sum([(dx/2)*(fun_w(x-X[y])*fun_f(fun_u[t,y]-h)+ fun_w(x-X[y+1])*fun_f(fun_u[t,y+1]-h)) for y in range(numNeu-1)])
+        if intgr == "Trap":
+            return sum([(dx/2)*(fun_w(x-X[y])*fun_f(fun_u[t,y]-h)+ fun_w(x-X[y+1])*fun_f(fun_u[t,y+1]-h)) for y in range(numNeu-1)])
+        elif intgr == "FFT":
+            return outra coisa
 
     for i in range(1,numSteps):
         du = dt*(-fun_u[i-1] + Integral(X,i-1))
