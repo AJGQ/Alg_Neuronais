@@ -99,8 +99,8 @@ def plot_U(fun_u, sliders = False):
 
     plt.show()
 
-fun_u = calculate_U("M")
-
+fun_u = calculate_U("E_M")
+'''
 numTest = 5
 M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 med_M = [ 0 for i in range(numSteps)]
@@ -172,7 +172,7 @@ plt.plot( np.arange(0,numSteps,1), med_X_M )
 plt.plot( np.arange(0,numSteps,1), min_X_M )
 
 plt.show()
-
+'''
 '''
 print("\n\n ------ Máximos-------\n\n")
 #print("Máximos:\n", M)
@@ -186,4 +186,4 @@ print("\n\nMáximo dos mínimos:\n",max_m)
 print("\n\nMínimo dos mínimos:\n",min_m)
 '''
 
-#plot_U(fun_u, True)
+plot_U(fun_u, True)
