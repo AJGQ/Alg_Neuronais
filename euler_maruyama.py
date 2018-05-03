@@ -1,9 +1,10 @@
 import numpy as np
+import time
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 from scipy import signal
 
-
+iniTime = time.time()
 #variaveis
 h = 2.8997
 A = 2
@@ -11,11 +12,11 @@ b = 0.08
 alfa = np.pi/10
 
 #discretizar espaco e tempo
-dx = 0.005
+dx = 0.1
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
-eps = 0.003
+eps = 0.005
 
 T = 10
 numSteps = 100
@@ -42,10 +43,10 @@ def calculate_U(met = "DET", intgr = "TRAPZ"):
 
     if intgr == "TRAPZ":
     	du = lambda x,t: dt*(-fun_u[t] + 
-    					 dx*np.trapz([fun_w(x-X[y])*np.heaviside(fun_u[t,y]-h,0.5) for y in range(numNeu)]))
+    					 dx*np.trapz([fun_w(x-X[y])*np.heaviside(fun_u[t,y]-h,1) for y in range(numNeu)]))
     elif intgr == "FFT":
         du = lambda x,t: dt*(-fun_u[t] + 
-        				 dx*signal.fftconvolve(fun_w(x),np.heaviside((fun_u[t] - h),0.5),mode='same'))
+        				 dx*signal.fftconvolve(fun_w(x),np.heaviside((fun_u[t] - h),1),mode='same'))
 
 
     #inicializar fun_u
@@ -55,7 +56,10 @@ def calculate_U(met = "DET", intgr = "TRAPZ"):
     fun_u[0] = fun_S
 
     for i in range(1,numSteps):
-        fun_u[i] = du(X, i-1) + fun_u[i-1] + noise[i]
+    	fun_u[i] = du(X, i-1) + fun_u[i-1] + noise[i]
+
+    print(np.trapz([fun_w(X-X[y])*np.heaviside(fun_u[0,y]-h,0.5) for y in range(numNeu)]))
+    print(signal.fftconvolve(fun_w(X),np.heaviside((fun_u[0] - h),1),mode='same'))
 
     return fun_u
 
@@ -104,9 +108,9 @@ def plotBoundaries(P):
 
 	plt.show()
 
-#fun_u = calculate_U("E_M", "FFT")
-
-numTest = 5
+fun_u = calculate_U()
+'''
+numTest = 1
 M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
 m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
@@ -114,14 +118,23 @@ m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 X_M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
 for i in range(numTest):
-    fun_u = calculate_U("E_M", "FFT")
+    fun_u = calculate_U("E_M")
     for j in range(numSteps):
         M[i][j] = max(fun_u[j])
         X_M[i][j] = X[np.argmax(fun_u[j])]
         m[i][j] = min(fun_u[j])
 
-plotBoundaries(M)
-plotBoundaries(m)
-plotBoundaries(X_M)
+print(time.time() - iniTime)
+print(numTest)
+print("Maximos")
+print (M)
+print("Minimos")
+print (m)
+print("Abcissas dos Maximos")
+print (X_M)
 
+#plotBoundaries(M)
+#plotBoundaries(m)
+#plotBoundaries(X_M)
+'''
 plot_U(fun_u, True)
