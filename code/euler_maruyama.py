@@ -1,9 +1,10 @@
 import numpy as np
+import time
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
+from scipy import signal
 
-
-
+iniTime = time.time()
 #variaveis
 h = 2.8997
 A = 2
@@ -15,27 +16,21 @@ dx = 0.5
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
-eps = 0.03
+eps = 0.005
 
-T = 4
+T = 10
 numSteps = 100
 dt = T/numSteps
 
+#print(dx)
+#print(dt)
+
 #definicao de funcoes
-def fun_f(x):
-    try:
-        if(x < 0):
-            return 0
-        else:
-            return 1
-    except:
-        #print(np.array([ fun_f(i) for i in x]))
-        return np.array([ fun_f(i) for i in x])
 
 def fun_w(x):
     return A*np.exp(-b*np.abs(x))*(b*np.sin(np.abs(alfa*x)) + np.cos(alfa*x))
 
-def calculate_U(met = "E_M"):
+def calculate_U(met = "DET", intgr = "TRAPZ"):
     #random
     if met == "E_M":
         noise = eps*np.random.random((numSteps,numNeu))
@@ -44,33 +39,22 @@ def calculate_U(met = "E_M"):
     elif met == "DET":
         noise = np.zeros((numSteps,numNeu))
 
+    #regra para integrar
+    if intgr == "TRAPZ":
+    	du = lambda t: dt*(-fun_u[t] +
+    		       dx*np.trapz([[fun_w(x-X[y])*np.heaviside(fun_u[t,y]-h,1) for y in range(numNeu)] for x in X]))
+    elif intgr == "FFT":
+        du = lambda t: dt*(-fun_u[t] +
+        	       dx*signal.fftconvolve(fun_w(X),np.heaviside((fun_u[t] - h),1),mode='same'))
+
     #inicializar fun_u
     fun_u = np.zeros((numSteps,numNeu))
 
     fun_S = -0.5 + 20 * np.exp(-(X**2)/18)
     fun_u[0] = fun_S
 
-    def Integral(x,t):
-        return sum([(dx/2)*(fun_w(x-X[y])*fun_f(fun_u[t,y]-h)+ fun_w(x-X[y+1])*fun_f(fun_u[t,y+1]-h)) for y in range(numNeu-1)])
-
     for i in range(1,numSteps):
-        du = dt*(-fun_u[i-1] + Integral(X,i-1))
-
-        #conv = dx*np.real(np.fft.ifft(np.fft.fft(fun_w(X), norm = "ortho")*
-        #                                              np.fft.fft(fun_f(fun_u[i-1] - h), norm = "ortho")
-        #                                              , norm = "ortho"))
-        #print(conv)
-        #du = dt*(-fun_u[i-1] + conv)
-
-        #du = dt*(-fun_u[i-1] + dx*np.convolve(fun_w(X), fun_f(fun_u[i-1] - h), "valid"))
-
-        du = dt*(-fun_u[i-1] + dx*np.real(np.fft.ifft(np.fft.fft(fun_w(X), norm = "ortho")*
-                                                      np.fft.fft(fun_f(fun_u[i-1] - h), norm = "ortho")
-                                                      , norm = "ortho")))
-
-        #du = dt*(-fun_u[i-1] + dx*np.convolve(fun_w(X), fun_f(fun_u[i-1] - h), 'valid')[0])
-
-        fun_u[i] = du + fun_u[i-1] + noise[i]
+    	fun_u[i] = du(i-1) + fun_u[i-1] + noise[i]
 
     return fun_u
 
@@ -81,8 +65,8 @@ def plot_U(fun_u, sliders = False):
     plt.axis((-lim/2,lim/2,-15,20))
 
     plt.plot(X,fun_u[0])
-    plt.plot(X,fun_u[-1] - h )
-    plt.plot(X,np.zeros(numNeu) - h)
+    plt.plot(X,fun_u[-1])
+    plt.plot(X,np.ones(numNeu)*h)
     if(sliders):
         #Sliders
         l, = plt.plot(X,fun_u[0])
@@ -99,91 +83,53 @@ def plot_U(fun_u, sliders = False):
 
     plt.show()
 
-fun_u = calculate_U("E_M")
-'''
-numTest = 5
-M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
-med_M = [ 0 for i in range(numSteps)]
-max_M = [ 0 for i in range(numSteps)]
-min_M = [ 0 for i in range(numSteps)]
 
+def plotBoundaries(P):
+	min_P = [ 0 for i in range(numSteps)]
+	med_P = [ 0 for i in range(numSteps)]
+	max_P = [ 0 for i in range(numSteps)]
+
+	for i in range(numSteps):
+	    min_P[i] = min([ P[j][i] for j in range(numTest)])
+	    med_P[i] = np.ma.average([ P[j][i] for j in range(numTest)])
+	    max_P[i] = max([ P[j][i] for j in range(numTest)])
+
+	plt.subplots()
+	plt.subplots_adjust(left=0.25, bottom=0.25)
+
+	plt.plot( np.arange(0,numSteps,1), min_P )
+	plt.plot( np.arange(0,numSteps,1), med_P )
+	plt.plot( np.arange(0,numSteps,1), max_P )
+
+	plt.show()
+
+fun_u = calculate_U()
+'''
+numTest = 1
+M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
 m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
-med_m = [ 0 for i in range(numSteps)]
-max_m = [ 0 for i in range(numSteps)]
-min_m = [ 0 for i in range(numSteps)]
 
 X_M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
-med_X_M = [ 0 for i in range(numSteps)]
-max_X_M = [ 0 for i in range(numSteps)]
-min_X_M = [ 0 for i in range(numSteps)]
 
 for i in range(numTest):
-    fun_u = calculate_U()
-    #if i == 0:
-    #    plot_U(fun_u,True)
+    fun_u = calculate_U("E_M")
     for j in range(numSteps):
         M[i][j] = max(fun_u[j])
         X_M[i][j] = X[np.argmax(fun_u[j])]
         m[i][j] = min(fun_u[j])
 
-for i in range(numSteps):
-    med_M[i] = sum([ M[j][i] for j in range(numTest)])/numTest
-    max_M[i] = max([ M[j][i] for j in range(numTest)])
-    min_M[i] = min([ M[j][i] for j in range(numTest)])
+print(time.time() - iniTime)
+print(numTest)
+print("Maximos")
+print (M)
+print("Minimos")
+print (m)
+print("Abcissas dos Maximos")
+print (X_M)
 
-    med_m[i] = sum([ m[j][i] for j in range(numTest)])/numTest
-    max_m[i] = max([ m[j][i] for j in range(numTest)])
-    min_m[i] = min([ m[j][i] for j in range(numTest)])
-
-    med_X_M[i] = sum([ X_M[j][i] for j in range(numTest)])/numTest
-    max_X_M[i] = max([ X_M[j][i] for j in range(numTest)])
-    min_X_M[i] = min([ X_M[j][i] for j in range(numTest)])
-
-#Plot - Maximos
-plt.subplots()
-plt.subplots_adjust(left=0.25, bottom=0.25)
-plt.axis((0,numSteps,0,50))
-
-plt.plot( np.arange(0,numSteps,1), max_M )
-plt.plot( np.arange(0,numSteps,1), med_M )
-plt.plot( np.arange(0,numSteps,1), min_M )
-
-plt.show()
-
-#Plot - Minimos
-plt.subplots()
-plt.subplots_adjust(left=0.25, bottom=0.25)
-plt.axis((0,numSteps,-20,10))
-
-plt.plot( np.arange(0,numSteps,1), max_m )
-plt.plot( np.arange(0,numSteps,1), med_m )
-plt.plot( np.arange(0,numSteps,1), min_m )
-
-plt.show()
-
-#Plot - abcissa dos Maximos
-plt.subplots()
-plt.subplots_adjust(left=0.25, bottom=0.25)
-plt.axis((0,numSteps,-20,20))
-
-plt.plot( np.arange(0,numSteps,1), max_X_M )
-plt.plot( np.arange(0,numSteps,1), med_X_M )
-plt.plot( np.arange(0,numSteps,1), min_X_M )
-
-plt.show()
+#plotBoundaries(M)
+#plotBoundaries(m)
+#plotBoundaries(X_M)
 '''
-'''
-print("\n\n ------ Máximos-------\n\n")
-#print("Máximos:\n", M)
-print("\n\nMedia dos máximos:\n",med_M)
-print("\n\nMáximo dos máximos:\n",max_M)
-print("\n\nMínimo dos máximos:\n",min_M)
-print("\n\n ------ Mínimos-------\n\n")
-#print("Mínimos:\n", m)
-print("\n\nMedia dos mínimos:\n",med_m)
-print("\n\nMáximo dos mínimos:\n",max_m)
-print("\n\nMínimo dos mínimos:\n",min_m)
-'''
-
 plot_U(fun_u, True)
