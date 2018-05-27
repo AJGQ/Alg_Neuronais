@@ -5,7 +5,7 @@ import sys
 
 #discretizar espaco e tempo
 
-X = np.arange(0,100,1)
+X = np.arange(0,10,1)
 
 argc = len(sys.argv)
 

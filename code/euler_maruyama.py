@@ -12,7 +12,7 @@ b = 0.08
 alfa = np.pi/10
 
 #discretizar espaco e tempo
-dx = 0.5
+dx = 0.005
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
@@ -103,9 +103,8 @@ def plotBoundaries(P):
 
 	plt.show()
 
-fun_u = calculate_U()
-'''
-numTest = 1
+#fun_u = calculate_U()
+numTest = 10
 M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
 m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
@@ -113,7 +112,7 @@ m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 X_M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
 for i in range(numTest):
-    fun_u = calculate_U("E_M")
+    fun_u = calculate_U("E_M","FFT")
     for j in range(numSteps):
         M[i][j] = max(fun_u[j])
         X_M[i][j] = X[np.argmax(fun_u[j])]
@@ -131,5 +130,4 @@ print (X_M)
 #plotBoundaries(M)
 #plotBoundaries(m)
 #plotBoundaries(X_M)
-'''
 plot_U(fun_u, True)
