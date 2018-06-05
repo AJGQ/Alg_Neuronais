@@ -84,7 +84,7 @@ def plot_U(fun_u, sliders = False):
     plt.show()
 
 
-def plotBoundaries(P):
+def plotProgressBoundaries(P):
 	min_P = [ 0 for i in range(numSteps)]
 	med_P = [ 0 for i in range(numSteps)]
 	max_P = [ 0 for i in range(numSteps)]
@@ -103,16 +103,28 @@ def plotBoundaries(P):
 
 	plt.show()
 
+
+
 #fun_u = calculate_U()
-numTest = 1
+numTest = 100
 M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
 m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
 X_M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
+max_U = [ -100 for x in X]
+
+med_U = [ 0 for x in X]
+
+min_U = [ 100 for x in X]
+
 for i in range(numTest):
     fun_u = calculate_U("E_M","FFT")
+    for x in range(numNeu):
+        max_U[x] = max(max_U[x],fun_u[-1][x])
+        med_U[x] = ((med_U[x]*i) + fun_u[-1][x])/(i+1)
+        min_U[x] = min(min_U[x],fun_u[-1][x])
     for j in range(numSteps):
         M[i][j] = max(fun_u[j])
         X_M[i][j] = X[np.argmax(fun_u[j])]
@@ -126,8 +138,22 @@ print("Minimos")
 print (m)
 print("Abcissas dos Maximos")
 print (X_M)
+print("Maximos de u")
+print (max_U)
+print("Medios de u")
+print (med_U)
+print("Minimos de u")
+print (min_U)
 
+plt.subplots()
+plt.subplots_adjust(left=0.25, bottom=0.25)
+
+plt.plot( X, max_U )
+plt.plot( X, med_U )
+plt.plot( X, min_U )
+
+plt.show()
 #plotBoundaries(M)
 #plotBoundaries(m)
 #plotBoundaries(X_M)
-plot_U(fun_u, True)
+#plot_U(fun_u, True)
