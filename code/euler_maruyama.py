@@ -16,7 +16,7 @@ dx = 0.005
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
-eps = 0.005
+eps = 0.050
 
 T = 10
 numSteps = 100
@@ -120,7 +120,7 @@ med_U = [ 0 for x in X]
 min_U = [ 100 for x in X]
 
 for i in range(numTest):
-    fun_u = calculate_U("E_M","FFT")
+    fun_u = calculate_U("M","FFT")
     for x in range(numNeu):
         max_U[x] = max(max_U[x],fun_u[-1][x])
         med_U[x] = ((med_U[x]*i) + fun_u[-1][x])/(i+1)
@@ -145,12 +145,12 @@ print (med_U)
 print("Minimos de u")
 print (min_U)
 
-plt.subplots()
-plt.subplots_adjust(left=0.25, bottom=0.25)
+#plt.subplots()
+#plt.subplots_adjust(left=0.25, bottom=0.25)
 
-plt.plot( X, max_U )
-plt.plot( X, med_U )
-plt.plot( X, min_U )
+#plt.plot( X, max_U )
+#plt.plot( X, med_U )
+#plt.plot( X, min_U )
 
 plt.show()
 #plotBoundaries(M)
