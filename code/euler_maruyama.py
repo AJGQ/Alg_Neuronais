@@ -104,7 +104,7 @@ def plotBoundaries(P):
 	plt.show()
 
 #fun_u = calculate_U()
-numTest = 10
+numTest = 1
 M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
 
 m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
