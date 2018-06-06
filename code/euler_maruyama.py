@@ -16,7 +16,7 @@ dx = 0.005
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
-eps = 0.050
+eps = 0.010
 
 T = 10
 numSteps = 100
@@ -147,12 +147,12 @@ print (min_U)
 
 #plt.subplots()
 #plt.subplots_adjust(left=0.25, bottom=0.25)
-
+#
 #plt.plot( X, max_U )
 #plt.plot( X, med_U )
 #plt.plot( X, min_U )
-
-plt.show()
+#
+#plt.show()
 #plotBoundaries(M)
 #plotBoundaries(m)
 #plotBoundaries(X_M)
