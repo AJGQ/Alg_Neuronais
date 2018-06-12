@@ -12,7 +12,7 @@ b = 0.08
 alfa = np.pi/10
 
 #discretizar espaco e tempo
-dx = 0.005
+dx = 0.05
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
@@ -22,16 +22,17 @@ T = 10
 numSteps = 100
 dt = T/numSteps
 
-#print(dx)
-#print(dt)
-
 #definicao de funcoes
 
 def fun_w(x):
     return A*np.exp(-b*np.abs(x))*(b*np.sin(np.abs(alfa*x)) + np.cos(alfa*x))
 
-def calculate_U(met = "DET", intgr = "TRAPZ"):
+def calculate_U(met = "E_M_Normal", intgr = "FFT"):
     #random
+    if met == "E_M_Normal":
+        noise = eps*np.random.standard_normal((numSteps,numNeu))
+    elif met == "M_Normal":
+        noise = (eps/2)*(np.random.standard_normal((numSteps,numNeu))**2 - dt )
     if met == "E_M":
         noise = eps*np.random.random((numSteps,numNeu))
     elif met == "M":
@@ -42,16 +43,22 @@ def calculate_U(met = "DET", intgr = "TRAPZ"):
     #regra para integrar
     if intgr == "TRAPZ":
     	du = lambda t: dt*(-fun_u[t] +
-    		       dx*np.trapz([[fun_w(x-X[y])*np.heaviside(fun_u[t,y]-h,1) for y in range(numNeu)] for x in X]))
+    		       dx*np.trapz([[fun_w(x-X[y])*np.heaviside(fun_u[t,y]-h,1) for y in range(numNeu)] for x in X]) +
+                       fun_S[t])
     elif intgr == "FFT":
         du = lambda t: dt*(-fun_u[t] +
-        	       dx*signal.fftconvolve(fun_w(X),np.heaviside((fun_u[t] - h),1),mode='same'))
+        	       dx*signal.fftconvolve(fun_w(X),np.heaviside((fun_u[t] - h),1),mode='same') +
+                       fun_S[t])
 
     #inicializar fun_u
     fun_u = np.zeros((numSteps,numNeu))
+    fun_S = np.zeros((numSteps,numNeu))
 
-    fun_S = -0.5 + 20 * np.exp(-(X**2)/18)
-    fun_u[0] = fun_S
+    fun_S[0] = -0.5 + 20 * np.exp(-(X**2)/18)
+    #for i in range(10):
+    #    fun_S[numSteps//2 + i] = -0.5 + 20 * np.exp(-((X + 5)**2)/18)
+
+    fun_u[0] = fun_S[0]
 
     for i in range(1,numSteps):
     	fun_u[i] = du(i-1) + fun_u[i-1] + noise[i]
@@ -83,8 +90,7 @@ def plot_U(fun_u, sliders = False):
 
     plt.show()
 
-
-def plotProgressBoundaries(P):
+def plotBoundaries(P, numTest):
 	min_P = [ 0 for i in range(numSteps)]
 	med_P = [ 0 for i in range(numSteps)]
 	max_P = [ 0 for i in range(numSteps)]
@@ -103,57 +109,3 @@ def plotProgressBoundaries(P):
 
 	plt.show()
 
-
-
-#fun_u = calculate_U()
-numTest = 100
-M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
-
-m = [[ 0 for i in range(numSteps)] for j in range(numTest)]
-
-X_M = [[ 0 for i in range(numSteps)] for j in range(numTest)]
-
-max_U = [ -100 for x in X]
-
-med_U = [ 0 for x in X]
-
-min_U = [ 100 for x in X]
-
-for i in range(numTest):
-    fun_u = calculate_U("M","FFT")
-    for x in range(numNeu):
-        max_U[x] = max(max_U[x],fun_u[-1][x])
-        med_U[x] = ((med_U[x]*i) + fun_u[-1][x])/(i+1)
-        min_U[x] = min(min_U[x],fun_u[-1][x])
-    for j in range(numSteps):
-        M[i][j] = max(fun_u[j])
-        X_M[i][j] = X[np.argmax(fun_u[j])]
-        m[i][j] = min(fun_u[j])
-
-print(time.time() - iniTime)
-print(numTest)
-print("Maximos")
-print (M)
-print("Minimos")
-print (m)
-print("Abcissas dos Maximos")
-print (X_M)
-print("Maximos de u")
-print (max_U)
-print("Medios de u")
-print (med_U)
-print("Minimos de u")
-print (min_U)
-
-#plt.subplots()
-#plt.subplots_adjust(left=0.25, bottom=0.25)
-#
-#plt.plot( X, max_U )
-#plt.plot( X, med_U )
-#plt.plot( X, min_U )
-#
-#plt.show()
-#plotBoundaries(M)
-#plotBoundaries(m)
-#plotBoundaries(X_M)
-#plot_U(fun_u, True)
