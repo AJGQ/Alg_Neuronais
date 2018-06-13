@@ -15,7 +15,7 @@ med_U = [ 0 for x in X]
 min_U = [ 100 for x in X]
 
 for i in range(numTest):
-    fun_u = calculate_U("M_Normal")
+    fun_u = calculate_U(i, met = "Normal_TSC_Perlin",intgr = "FFT")
     for x in range(numNeu):
         max_U[x] = max(max_U[x],fun_u[-1][x])
         med_U[x] = ((med_U[x]*i) + fun_u[-1][x])/(i+1)

@@ -3,6 +3,7 @@ import time
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 from scipy import signal
+from noise import *
 
 iniTime = time.time()
 #variaveis
@@ -12,11 +13,11 @@ b = 0.08
 alfa = np.pi/10
 
 #discretizar espaco e tempo
-dx = 0.05
+dx = 0.005
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
-eps = 0.010
+eps = 0.05
 
 T = 10
 numSteps = 100
@@ -27,13 +28,20 @@ dt = T/numSteps
 def fun_w(x):
     return A*np.exp(-b*np.abs(x))*(b*np.sin(np.abs(alfa*x)) + np.cos(alfa*x))
 
-def calculate_U(met = "E_M_Normal", intgr = "FFT"):
+def calculate_U(b, met = "E_M_Normal", intgr = "FFT"):
+    
     #random
-    if met == "E_M_Normal":
+    if met == "Normal_SC_Cos":
+        noise = np.sqrt(eps) * np.array([dx * signal.fftconvolve(np.cos(X), 
+						np.random.standard_normal((numNeu)),
+						mode = 'same') for i in range (numSteps)])
+    elif met == "Normal_TSC_Perlin":
+        noise = eps * np.array([ np.array([pnoise2(j, i*0.01 + b, 20) for j in X]) for i in range(numSteps)])
+    elif met == "E_M_Normal":
         noise = eps*np.random.standard_normal((numSteps,numNeu))
     elif met == "M_Normal":
         noise = (eps/2)*(np.random.standard_normal((numSteps,numNeu))**2 - dt )
-    if met == "E_M":
+    elif met == "E_M":
         noise = eps*np.random.random((numSteps,numNeu))
     elif met == "M":
         noise = (eps/2)*(np.random.random((numSteps,numNeu))**2 - dt )
@@ -62,7 +70,7 @@ def calculate_U(met = "E_M_Normal", intgr = "FFT"):
 
     for i in range(1,numSteps):
     	fun_u[i] = du(i-1) + fun_u[i-1] + noise[i]
-
+    
     return fun_u
 
 def plot_U(fun_u, sliders = False):

@@ -4,8 +4,16 @@ import sys
 
 
 #discretizar espaco e tempo
+dx = 0.005
+lim = 100
+X = np.arange(-lim/2,lim/2,dx)
+numNeu = len(X)
+eps = 0.010
 
-X = np.arange(0,10,1)
+T = 10
+numSteps = 100
+dt = T/numSteps
+N=np.arange(0,T,dt)
 
 argc = len(sys.argv)
 
@@ -35,7 +43,7 @@ fig, _ = plt.subplots()
 plt.subplots_adjust(left=0.25, bottom=0.25)
 i = 1
 for f in maxF:
-    plt.plot(X, f, str(i/argc))
+    plt.plot(N, f, str(i/argc))
     i+=1
 
 plt.show()
@@ -44,7 +52,7 @@ fig, _ = plt.subplots()
 plt.subplots_adjust(left=0.25, bottom=0.25)
 i = 1
 for f in minF:
-    plt.plot(X, f, str(i/argc))
+    plt.plot(N, f, str(i/argc))
     i+=1
 
 plt.show()
@@ -53,7 +61,7 @@ fig, _ = plt.subplots()
 plt.subplots_adjust(left=0.25, bottom=0.25)
 i = 1
 for f in abcF:
-    plt.plot(X, f, str(i/argc))
+    plt.plot(N, f, str(i/argc))
     i+=1
 
 plt.show()
