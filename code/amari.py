@@ -17,7 +17,7 @@ dx = 0.005
 lim = 100
 X = np.arange(-lim/2,lim/2,dx)
 numNeu = len(X)
-eps = 0.05
+eps = 0.005
 
 T = 10
 numSteps = 100
