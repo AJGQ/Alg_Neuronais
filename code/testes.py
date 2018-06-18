@@ -1,8 +1,7 @@
 from amari import *
 import sys
 
-l= sys.stdin.readline()
-met, intgr =  l.split()
+met, intgr =  sys.argv[1:]
 
 #fun_u = calculate_U("M_Normal")
 numTest = 10
@@ -19,7 +18,7 @@ med_U = [ 0 for x in X]
 min_U = [ 100 for x in X]
 
 for i in range(numTest):
-    fun_u = calculate_U(i, met ,intgr)
+    fun_u = calculate_U(met, intgr)
     for x in range(numNeu):
         max_U[x] = max(max_U[x],fun_u[-1][x])
         med_U[x] = ((med_U[x]*i) + fun_u[-1][x])/(i+1)
@@ -53,5 +52,5 @@ plt.plot( X, min_U )
 plt.show()
 plotBoundaries(M  , numTest)
 plotBoundaries(m  , numTest)
-plotBoundaries(X_M, numTest)
+plotBoundaries(X_M, numTest, swap=True)
 #plot_U(fun_u, True)
